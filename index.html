@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador · Bodas · Marcos Reyes</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #0a0a0a;
+  --dark: #111111;
+  --dark2: #1a1a1a;
+  --dark3: #222222;
+  --white: #ffffff;
+  --cream: #f5f0e8;
+  --gold: #c9a96e;
+  --gold-light: #e2c9a0;
+  --gray: #888888;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: var(--dark);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.cotizador {
+  width: 100%;
+  max-width: 960px;
+}
+
+.cot-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.cot-eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--gold-light);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.cot-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(42px, 8vw, 82px);
+  font-weight: 400;
+  line-height: 0.95;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+.cot-title em { font-style: italic; color: var(--gold-light); }
+.cot-subtitle {
+  font-size: 13px;
+  font-weight: 300;
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── MONTH SELECTOR ── */
+.month-selector-wrap {
+  margin-bottom: 36px;
+  text-align: center;
+}
+.month-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.month-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.month-btn {
+  padding: 8px 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+.month-btn:hover:not(.active) {
+  border-color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.75);
+}
+.month-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--black);
+}
+.month-btn.year-divider {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.2);
+  font-size: 8px;
+  letter-spacing: 2px;
+  cursor: default;
+  padding: 8px 6px;
+  flex-basis: 100%;
+  text-align: left;
+  padding-left: 0;
+}
+
+.inflation-note {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201,169,110,0.08);
+  border: 1px solid rgba(201,169,110,0.2);
+  padding: 6px 14px;
+  font-size: 11px;
+  color: var(--gold-light);
+  font-weight: 500;
+  border-radius: 2px;
+}
+.inflation-note span { opacity: 0.6; font-weight: 300; }
+
+/* ── MAIN CARD ── */
+.card {
+  background: var(--dark2);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+
+.card-left {
+  padding: 44px 40px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.slider-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.slider-value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.slider-value-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+.slider-badge {
+  background: var(--gold);
+  color: var(--black);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 14px;
+  letter-spacing: 1px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.15);
+  outline: none;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  background: var(--white);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  transition: transform 0.15s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+input[type=range]::-moz-range-thumb {
+  width: 22px; height: 22px;
+  background: var(--white);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+.slider-minmax {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 40px;
+}
+
+.packages-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.pkg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pkg-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pkg-option:hover { border-color: rgba(255,255,255,0.25); }
+.pkg-option.active {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.pkg-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.pkg-option.active .pkg-dot { background: var(--black); }
+
+.pkg-info { flex: 1; }
+.pkg-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--white);
+  transition: color 0.2s;
+}
+.pkg-option.active .pkg-name { color: var(--black); }
+.pkg-desc {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 300;
+  margin-top: 2px;
+  transition: color 0.2s;
+}
+.pkg-option.active .pkg-desc { color: rgba(0,0,0,0.55); }
+
+.pkg-badge {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.08);
+  color: var(--gold-light);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.pkg-option.active .pkg-badge {
+  background: rgba(0,0,0,0.15);
+  color: var(--black);
+}
+
+/* RIGHT PANEL */
+.card-right {
+  padding: 44px 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-eyebrow {
+  font-size: 9px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: var(--gold-light);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.3s;
+}
+.plan-eyebrow.visible { opacity: 1; transform: translateY(0); }
+
+.plan-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 6px;
+  transition: all 0.25s;
+}
+
+.plan-price-area { margin-bottom: 4px; }
+.plan-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.plan-price-base {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255,255,255,0.3);
+  text-decoration: line-through;
+  transition: all 0.3s;
+}
+.plan-price-final-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.plan-price {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  line-height: 1;
+  transition: all 0.25s;
+}
+.plan-price-note {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-weight: 300;
+  font-style: italic;
+}
+.price-inflation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(201,169,110,0.12);
+  border: 1px solid rgba(201,169,110,0.25);
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  letter-spacing: 0.5px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+.plan-ref-note {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-style: italic;
+  margin-bottom: 20px;
+  font-weight: 300;
+  line-height: 1.5;
+}
+.plan-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 24px;
+}
+.plan-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  margin-bottom: 28px;
+}
+.plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+.plan-features li .feat-icon {
+  width: 18px; height: 18px;
+  min-width: 18px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.plan-features li .feat-icon svg {
+  width: 10px; height: 10px;
+  fill: var(--black);
+}
+.plan-gift {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  background: rgba(201,169,110,0.08);
+  border: 1px solid rgba(201,169,110,0.2);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.plan-gift strong { color: var(--gold-light); }
+
+.plan-month-tag {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.plan-month-tag::before {
+  content: '';
+  width: 16px; height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.cta-btn {
+  display: block;
+  text-align: center;
+  padding: 16px 24px;
+  background: var(--white);
+  color: var(--black);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s;
+  cursor: pointer;
+  border: none;
+}
+.cta-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: var(--gold);
+  transform: translateX(-101%);
+  transition: transform 0.38s cubic-bezier(.4,0,.2,1);
+  z-index: 0;
+}
+.cta-btn:hover::before { transform: translateX(0); }
+.cta-btn span { position: relative; z-index: 1; }
+
+.cta-wa {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 12px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.cta-wa:hover { color: rgba(255,255,255,0.7); }
+.cta-wa a { color: inherit; text-decoration: none; }
+
+.cot-note {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.3);
+  margin-top: 28px;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.ipc-box {
+  margin-top: 20px;
+  background: rgba(201,169,110,0.05);
+  border: 1px solid rgba(201,169,110,0.15);
+  padding: 14px 18px;
+  text-align: center;
+}
+.ipc-box-title {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.ipc-box-text {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.65;
+  font-weight: 300;
+}
+.ipc-box-text strong { color: rgba(255,255,255,0.65); font-weight: 500; }
+
+.fade-enter { animation: fadeUp 0.3s ease forwards; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slider-track-wrap {
+  position: relative;
+  margin-bottom: 10px;
+}
+.slider-fill {
+  position: absolute;
+  left: 0; top: 0; height: 3px;
+  background: var(--gold);
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (max-width: 780px) {
+  body { padding: 24px 16px; }
+  .card { grid-template-columns: 1fr; }
+  .card-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 28px 24px; }
+  .card-right { padding: 28px 24px; }
+  .cot-title { font-size: clamp(38px, 12vw, 70px); }
+  .month-btn { padding: 7px 11px; font-size: 9px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cotizador">
+
+  <div class="cot-header">
+    <div class="cot-eyebrow">Fotografía & Video · Bodas</div>
+    <div class="cot-title">Armá tu<br><em>cotización</em></div>
+    <p class="cot-subtitle">Elegí el plan, seleccioná el mes de tu boda y el precio se ajusta automáticamente según la inflación proyectada del IPC Córdoba.</p>
+  </div>
+
+  <!-- Month Selector -->
+  <div class="month-selector-wrap">
+    <div class="month-label">¿En qué mes es tu boda?</div>
+    <div class="month-grid" id="month-grid"></div>
+    <div class="inflation-note" id="inflation-note">
+      <span>📊 IPC Córdoba:</span>
+      <strong id="inflation-pct">sin ajuste</strong>
+      <span id="inflation-detail"></span>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <div class="card-left">
+      <div class="slider-label">Seleccioná el plan</div>
+      <div class="slider-value-row">
+        <div class="slider-value-text" id="slider-text">Plan 1 de 3</div>
+        <div class="slider-badge" id="slider-badge">P1</div>
+      </div>
+      <div class="slider-track-wrap">
+        <div class="slider-fill" id="slider-fill"></div>
+        <input type="range" id="pkg-slider" min="0" max="2" step="1" value="0">
+      </div>
+      <div class="slider-minmax">
+        <span id="min-label">Boda Íntima</span>
+        <span id="max-label">Boda Full</span>
+      </div>
+      <div class="packages-label">Planes disponibles</div>
+      <div class="pkg-list" id="pkg-list"></div>
+    </div>
+
+    <div class="card-right" id="card-right"></div>
+  </div>
+
+  <div class="ipc-box">
+    <div class="ipc-box-title">¿Por qué varía el precio según el mes?</div>
+    <div class="ipc-box-text">
+      Argentina tiene inflación mensual real. Los precios base son de <strong>junio 2026</strong>.<br>
+      Se proyecta un aumento según el <strong>IPC Córdoba</strong> (~3–4% mensual estimado para 2026, ~2.5% para 2027).<br>
+      Así el precio que cotizás hoy ya refleja lo que vas a pagar cuando llegue tu fecha.
+    </div>
+  </div>
+
+  <p class="cot-note">Todos los planes incluyen contrato + reserva de fecha.<br>Los precios son referenciales · Lo ajustamos en tu llamada.</p>
+
+</div>
+
+<script>
+const MONTHS_CONFIG = [
+  { key: 'jun2026', label: 'Junio',      year: '2026', base: true,  factor: 1.000, monthly: 0 },
+  { key: 'jul2026', label: 'Julio',      year: '2026', base: false, factor: 1.035, monthly: 3.5 },
+  { key: 'ago2026', label: 'Agosto',     year: '2026', base: false, factor: 1.071, monthly: 3.5 },
+  { key: 'sep2026', label: 'Septiembre', year: '2026', base: false, factor: 1.109, monthly: 3.5 },
+  { key: 'oct2026', label: 'Octubre',    year: '2026', base: false, factor: 1.148, monthly: 3.5 },
+  { key: 'nov2026', label: 'Noviembre',  year: '2026', base: false, factor: 1.188, monthly: 3.5 },
+  { key: 'dic2026', label: 'Diciembre',  year: '2026', base: false, factor: 1.230, monthly: 3.5 },
+  { key: 'ene2027', label: 'Enero',      year: '2027', base: false, factor: 1.264, monthly: 2.8 },
+  { key: 'feb2027', label: 'Febrero',    year: '2027', base: false, factor: 1.300, monthly: 2.8 },
+  { key: 'mar2027', label: 'Marzo',      year: '2027', base: false, factor: 1.336, monthly: 2.8 },
+  { key: 'abr2027', label: 'Abril',      year: '2027', base: false, factor: 1.373, monthly: 2.8 },
+  { key: 'may2027', label: 'Mayo',       year: '2027', base: false, factor: 1.412, monthly: 2.8 },
+  { key: 'jun2027', label: 'Junio',      year: '2027', base: false, factor: 1.451, monthly: 2.8 },
+  { key: 'jul2027', label: 'Julio',      year: '2027', base: false, factor: 1.492, monthly: 2.8 },
+  { key: 'ago2027', label: 'Agosto',     year: '2027', base: false, factor: 1.534, monthly: 2.8 },
+  { key: 'sep2027', label: 'Septiembre', year: '2027', base: false, factor: 1.577, monthly: 2.8 },
+  { key: 'oct2027', label: 'Octubre',    year: '2027', base: false, factor: 1.621, monthly: 2.8 },
+  { key: 'nov2027', label: 'Noviembre',  year: '2027', base: false, factor: 1.666, monthly: 2.8 },
+  { key: 'dic2027', label: 'Diciembre',  year: '2027', base: false, factor: 1.712, monthly: 2.8 },
+];
+
+const PACKAGES = [
+  {
+    id: 'b1',
+    label: 'PLAN 01 — BODA ÍNTIMA',
+    nameSingle: 'Boda Íntima',
+    name: 'Boda\nÍntima',
+    desc: 'Ceremonia civil, unión convivencial o festejo reducido',
+    basePrice: 450000,
+    badge: null,
+    features: [
+      'Fotos digitales de todo el evento',
+      'Imágenes editadas en alta resolución',
+      'Galería digital',
+      'Cobertura de 6 Hs.',
+      'Edición profesional de luz y color',
+    ],
+    gift: '🎁 <strong>Regalo:</strong> Galería online privada permanente',
+  },
+  {
+    id: 'b2',
+    label: 'PLAN 02 — BODA COMPLETA',
+    nameSingle: 'Boda Completa',
+    name: 'Boda\nCompleta',
+    desc: 'El más elegido. Cobertura total sin límite de tiempo.',
+    basePrice: 590000,
+    badge: 'MÁS ELEGIDO',
+    features: [
+      'Fotos digitales de todo el evento',
+      'Imágenes editadas en alta resolución',
+      'Galería digital + pendrive',
+      'Cobertura completa de 9 Hs.',
+      'Preparativos · Ceremonia · Fiesta',
+      'Edición profesional de luz, contraste y color',
+    ],
+    gift: '🎁 <strong>Regalo:</strong> Video de Fotos cronológico',
+  },
+  {
+    id: 'b3',
+    label: 'PLAN 03 — BODA FULL',
+    nameSingle: 'Boda Full',
+    name: 'Foto + Pre-Boda\n+ Video completo',
+    desc: 'Para los que quieren revivir el día completo, no solo verlo en fotos',
+    basePrice: 1290000,
+    badge: null,
+    features: [
+      'Todo lo del Plan 02 incluido',
+      'Pre-Boda',
+      'Video de la pareja para el salón',
+      'Video Extendido (25-35 min) según evento',
+      'Tomas aéreas con Drone',
+    ],
+    gift: '🎁 <strong>Regalo:</strong> Pendrive + Tarjeta de invitación',
+  },
+];
+
+let activeIdx = 0;
+let selectedMonthKey = 'jun2026';
+
+const slider = document.getElementById('pkg-slider');
+const sliderFill = document.getElementById('slider-fill');
+const sliderText = document.getElementById('slider-text');
+const sliderBadge = document.getElementById('slider-badge');
+const pkgList = document.getElementById('pkg-list');
+const cardRight = document.getElementById('card-right');
+const monthGrid = document.getElementById('month-grid');
+const inflationNote = document.getElementById('inflation-note');
+const inflationPct = document.getElementById('inflation-pct');
+const inflationDetail = document.getElementById('inflation-detail');
+
+function fmt(n) {
+  return '$ ' + Math.round(n).toLocaleString('es-AR');
+}
+
+function getMonthConfig() {
+  return MONTHS_CONFIG.find(m => m.key === selectedMonthKey) || MONTHS_CONFIG[0];
+}
+
+function buildMonthGrid() {
+  let html = '';
+  let lastYear = '';
+  MONTHS_CONFIG.forEach(m => {
+    if (m.year !== lastYear) {
+      html += `<div class="month-btn year-divider">── ${m.year} ──</div>`;
+      lastYear = m.year;
+    }
+    html += `<button class="month-btn${m.key === selectedMonthKey ? ' active' : ''}" onclick="selectMonth('${m.key}')">${m.label}${m.base ? ' ★' : ''}</button>`;
+  });
+  monthGrid.innerHTML = html;
+}
+
+function updateInflationNote() {
+  const mc = getMonthConfig();
+  if (mc.base) {
+    inflationPct.textContent = 'Precio base';
+    inflationDetail.textContent = '(junio 2026, sin ajuste)';
+  } else {
+    const pct = ((mc.factor - 1) * 100).toFixed(1);
+    inflationPct.textContent = `+${pct}% acum.`;
+    inflationDetail.textContent = `(~${mc.monthly}% mensual IPC Córdoba)`;
+  }
+}
+
+function selectMonth(key) {
+  selectedMonthKey = key;
+  buildMonthGrid();
+  updateInflationNote();
+  render();
+}
+
+function render() {
+  const pkg = PACKAGES[activeIdx];
+  const mc = getMonthConfig();
+
+  const pct = (activeIdx / (PACKAGES.length - 1)) * 100;
+  sliderFill.style.width = pct + '%';
+  sliderText.textContent = `Plan ${activeIdx + 1} de ${PACKAGES.length}`;
+  sliderBadge.textContent = `P${activeIdx + 1}`;
+  slider.value = activeIdx;
+
+  pkgList.innerHTML = PACKAGES.map((p, i) => `
+    <div class="pkg-option${i === activeIdx ? ' active' : ''}" onclick="selectPkg(${i})">
+      <div class="pkg-dot"></div>
+      <div class="pkg-info">
+        <div class="pkg-name">${p.nameSingle}</div>
+        <div class="pkg-desc">${p.desc}</div>
+      </div>
+      ${p.badge ? `<div class="pkg-badge">${p.badge}</div>` : ''}
+    </div>
+  `).join('');
+
+  const basePrice = pkg.basePrice;
+  const adjustedPrice = Math.round(basePrice * mc.factor);
+  const hasAdjust = !mc.base;
+  const accumPct = ((mc.factor - 1) * 100).toFixed(1);
+
+  const waMsg = encodeURIComponent(
+    `Hola Marcos! Me interesa el ${pkg.nameSingle} para mi boda en ${mc.label} ${mc.year}. El precio que me muestra el cotizador es ${fmt(adjustedPrice)}. ¿Podemos hablar?`
+  );
+  const waUrl = `https://api.whatsapp.com/send/?phone=5493512518671&text=${waMsg}&type=phone_number&app_absent=0`;
+
+  cardRight.innerHTML = `
+    <div class="plan-eyebrow visible">${pkg.label}</div>
+    <div class="plan-month-tag">${mc.label} ${mc.year}</div>
+    <div class="plan-name fade-enter">${pkg.name.replace('\n','<br>')}</div>
+
+    <div class="plan-price-area">
+      <div class="plan-price-row">
+        ${hasAdjust ? `<div class="plan-price-base">${fmt(basePrice)}</div>` : ''}
+        ${hasAdjust ? `<span class="price-inflation-badge">+${accumPct}% IPC</span>` : ''}
+      </div>
+      <div class="plan-price-final-row">
+        <div class="plan-price fade-enter">${fmt(adjustedPrice)}</div>
+        <div class="plan-price-note">pago único</div>
+      </div>
+    </div>
+
+    <p class="plan-ref-note">
+      ${hasAdjust
+        ? `Precio base junio 2026: ${fmt(basePrice)} · Ajustado +${accumPct}% por inflación IPC Córdoba estimada para ${mc.label} ${mc.year}.`
+        : 'Precio base · Lo ajustamos en tu llamada.'}
+    </p>
+    <div class="plan-divider"></div>
+    <ul class="plan-features fade-enter">
+      ${pkg.features.map(f => `
+        <li>
+          <span class="feat-icon">
+            <svg viewBox="0 0 12 10" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 5l3.5 3.5L11 1" stroke="#0a0a0a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          ${f}
+        </li>
+      `).join('')}
+    </ul>
+    ${pkg.gift ? `<div class="plan-gift fade-enter">${pkg.gift}</div>` : ''}
+    <a class="cta-btn" href="${waUrl}" target="_blank"><span>Consultar este plan →</span></a>
+    <div class="cta-wa"><a href="${waUrl}" target="_blank">o pedilo directo por WhatsApp →</a></div>
+  `;
+}
+
+function selectPkg(i) {
+  activeIdx = i;
+  render();
+}
+
+slider.addEventListener('input', () => {
+  activeIdx = parseInt(slider.value);
+  render();
+});
+
+buildMonthGrid();
+updateInflationNote();
+render();
+</script>
+
+</body>
+</html>
